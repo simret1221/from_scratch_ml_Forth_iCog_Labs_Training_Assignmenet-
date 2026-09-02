@@ -1,0 +1,129 @@
+FROM-SCRATCH ML — BASELINE RESULTS
+===================================
+
+Version:
+v1.0 — Required Assignment Baseline
+
+Date:
+September 2, 2026
+
+
+PROJECT
+=======
+
+Implementation of K-Nearest Neighbors (KNN) and K-Means
+from scratch using native Python data structures and basic
+mathematical operations.
+
+
+KNN RESULTS
+===========
+
+Algorithm:
+K-Nearest Neighbors
+
+K:
+3
+
+Query:
+[1.8, 1.7]
+
+Prediction:
+A
+
+Required components verified:
+
+- Euclidean distance
+- Distance calculation to all training points
+- Custom Quick Sort
+- K nearest neighbor selection
+- Majority voting
+- Input validation
+
+
+K-MEANS RESULTS
+===============
+
+Algorithm:
+K-Means
+
+K:
+2
+
+Dataset:
+8 two-dimensional points
+
+Final centroids:
+
+Cluster 0:
+[1.75, 1.625]
+
+Cluster 1:
+[7.75, 7.625]
+
+Cluster assignments:
+
+[0, 0, 0, 0, 1, 1, 1, 1]
+
+Required components verified:
+
+- Centroid initialization
+- Distance-based cluster assignment
+- Mean centroid calculation
+- Iterative updates
+- Convergence detection
+- Empty cluster handling
+
+
+TEST RESULTS
+============
+
+Distance tests:
+PASSED
+
+Sorting tests:
+PASSED
+
+KNN tests:
+PASSED
+
+K-Means tests:
+PASSED
+
+
+DEMONSTRATION
+=============
+
+main.py:
+PASSED
+
+
+BASELINE STATUS
+===============
+
+Required assignment implementation:
+COMPLETE
+
+All baseline tests:
+PASSED
+
+Ready for GitHub baseline commit:
+YES
+
+
+NEXT PHASE
+==========
+
+Advanced development will be implemented separately
+from the required baseline.
+
+Planned areas include:
+
+- Weighted KNN
+- Feature normalization
+- K selection
+- K-Means++ initialization
+- Inertia / Elbow analysis
+- Silhouette analysis
+- Experiment framework
+- Reliability and failure analysis
