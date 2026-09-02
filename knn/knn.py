@@ -82,3 +82,74 @@ class KNN:
                 best_label = label
 
         return best_label
+
+    def predict_with_confidence(self, query_point):
+
+        if not self.training_data:
+            raise ValueError(
+                "Model has not been trained. Call fit() first."
+            )
+
+        if self.k > len(self.training_data):
+            raise ValueError(
+                "K cannot be greater than the number of training points."
+            )
+
+        distances = []
+
+        # Calculate distance to every training point
+        for index, (point, label) in enumerate(self.training_data):
+
+            distance = euclidean_distance(
+                query_point,
+                point
+            )
+
+            distances.append(
+                (distance, label, index)
+            )
+
+        # Custom sorting
+        sorted_neighbors = quick_sort(distances)
+
+        # Select K nearest neighbors
+        nearest_neighbors = sorted_neighbors[:self.k]
+
+        # Count votes
+        votes = {}
+
+        for _, label, _ in nearest_neighbors:
+
+            if label not in votes:
+                votes[label] = 0
+
+            votes[label] += 1
+
+        # Find majority class
+        best_label = None
+        best_votes = -1
+
+        for label in votes:
+
+            if votes[label] > best_votes:
+                best_votes = votes[label]
+                best_label = label
+
+        # Calculate confidence
+        confidence = best_votes / self.k
+
+        # Check for ties
+        tied = []
+
+        for label in votes:
+
+            if votes[label] == best_votes:
+                tied.append(label)
+
+        return {
+            "prediction": best_label,
+            "confidence": confidence,
+            "votes": votes,
+            "tie": len(tied) > 1
+        }
+

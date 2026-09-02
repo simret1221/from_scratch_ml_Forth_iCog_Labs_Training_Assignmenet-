@@ -13,6 +13,7 @@ class KMeans:
         self.max_iterations = max_iterations
         self.centroids = []
         self.labels = []
+        self.convergence_history = []
 
     def fit(self, data):
         """
@@ -39,16 +40,17 @@ class KMeans:
         dimensions = len(data[0])
 
         for point in data:
+
             if len(point) != dimensions:
                 raise ValueError(
                     "All data points must have the same dimensions."
                 )
 
-        # Initialize centroids using the first K data points
-        self.centroids = []
+        # Reset convergence history for a new training run
+        self.convergence_history = []
 
-        for i in range(self.k):
-            self.centroids.append(data[i][:])
+        # Initialize centroids using K-Means++
+        self.initialize_kmeans_plus_plus(data)
 
         for iteration in range(self.max_iterations):
 
@@ -90,9 +92,11 @@ class KMeans:
 
                 # Keep old centroid if cluster is empty
                 if not cluster_points:
+
                     new_centroids.append(
                         self.centroids[cluster_index][:]
                     )
+
                     continue
 
                 mean_point = []
@@ -105,23 +109,77 @@ class KMeans:
                         total += point[dimension]
 
                     mean = total / len(cluster_points)
+
                     mean_point.append(mean)
 
                 new_centroids.append(mean_point)
 
-            # Step 3: Check convergence
+            # Step 3: Track centroid movement
+            movement = 0
+
+            for i in range(self.k):
+
+                for j in range(dimensions):
+
+                    difference = (
+                        self.centroids[i][j]
+                        - new_centroids[i][j]
+                    )
+
+                    movement += difference * difference
+
+            self.convergence_history.append(
+                movement ** 0.5
+            )
+
+            # Step 4: Check convergence
             if self._centroids_equal(
                 self.centroids,
                 new_centroids
             ):
+
                 self.centroids = new_centroids
                 self.labels = new_labels
+
                 break
 
             self.centroids = new_centroids
             self.labels = new_labels
 
         return self
+
+    def initialize_kmeans_plus_plus(self, data):
+
+        self.centroids = []
+
+        # First centroid
+        self.centroids.append(data[0][:])
+
+        while len(self.centroids) < self.k:
+
+            best_point = None
+            best_distance = -1
+
+            for point in data:
+
+                min_distance = None
+
+                for centroid in self.centroids:
+
+                    distance = self._distance(
+                        point,
+                        centroid
+                    )
+
+                    if min_distance is None or distance < min_distance:
+                        min_distance = distance
+
+                if min_distance > best_distance:
+
+                    best_distance = min_distance
+                    best_point = point
+
+            self.centroids.append(best_point[:])
 
     def _distance(self, point_a, point_b):
         """
@@ -131,7 +189,9 @@ class KMeans:
         squared_sum = 0
 
         for i in range(len(point_a)):
+
             difference = point_a[i] - point_b[i]
+
             squared_sum += difference * difference
 
         return squared_sum ** 0.5
@@ -159,3 +219,23 @@ class KMeans:
                     return False
 
         return True
+
+    def inertia(self, data):
+
+        if not self.centroids or not self.labels:
+            raise ValueError("Model must be fitted first.")
+
+        total = 0
+
+        for i in range(len(data)):
+
+            point = data[i]
+            centroid = self.centroids[self.labels[i]]
+
+            total += self._distance(
+                point,
+                centroid
+            ) ** 2
+
+        return total
+
